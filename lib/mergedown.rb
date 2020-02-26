@@ -2,40 +2,27 @@ require 'fileutils'
 
 class Mergedown
   def initialize(src_dir, options={})
-    @cache = {}
-    @content = ""
-    process(File.join(src_dir, options[:mainfile]))
-    File.open(File.join(".", options[:outfile]), 'w') do |f|
-      f.write @content
-    end
+    @outfile = options[:outfile]
+    File.delete(@outfile) if File.exist?(@outfile)
+    process(src_dir, options[:mainfile])
   end
 
-  def parse(txt)
-    m = txt.scan /^:include\s+"([^\"]*)"/
-    (m || []).flatten.uniq
-  end
+  def process(folder, filename)
+    file_path = File.join(folder, filename)
 
-  def process(file_path, parents = [])
-    parents << file_path if parents.length == 0
-
-    if @cache[file_path]
-      @content = @cache[file_path]
-    else
-      file = File.read(file_path)
-      paths = parse file
-      if paths.length > 0
-        paths.each do |path|
-          regex = Regexp.new("^\:include\\s+\"#{path}\".*$\n")
-          if parents.include?(path)
-            @content = ""
-          else
-            process(path, parents + [path])
-          end
-          file.gsub!(regex, @content)
-        end
+    if filename !~ /\.md$/
+      if File.exist?(File.join(file_path, 'main.md'))
+        process(file_path, 'main.md')
       end
-      @content = file
-      @cache[file_path] ||= file
+      return
+    end
+
+    File.foreach(file_path) do |line|
+      if line =~ /^:include\s+"([^\"]*)"/
+        process(folder, $1)
+      else
+        File.open(@outfile, "a") { |f| f.write line }
+      end
     end
   end
 end

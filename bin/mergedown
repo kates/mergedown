@@ -1,18 +1,20 @@
 #!/usr/bin/env ruby
 
 require 'optparse'
-require 'mergedown'
+require './lib/mergedown'
 
 options = {
   mainfile: 'main.md',
-  outfile: 'out.md'
+  outfile: 'out.md',
 }
 
 OptionParser.new do |opts|
   opts.banner = 'Usage: mergedown <src_dir> [options]'
+
   opts.on('-m', '--main MAINFILE', 'Main entrypoint. defaults to main.md') do |m|
     options[:mainfile] = m
   end
+
   opts.on('-o', '--output FILENAME', 'Output filename. defaults to out.md') do |o|
     options[:outfile] = o
   end

@@ -1,4 +1,4 @@
 # Mergdown
 
-:include "docs/install.md"
-:include "docs/usage.md"
+:include "install.md"
+:include "usage"
