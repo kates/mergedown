@@ -1,10 +1,14 @@
 require 'fileutils'
 
 class Mergedown
+
   def initialize(src_dir, options={})
     @outfile = options[:outfile]
     File.delete(@outfile) if File.exist?(@outfile)
+    @filehandler = File.open(@outfile, "a")
     process(src_dir, options[:mainfile])
+  ensure
+    @filehandler.close
   end
 
   def process(folder, filename)
@@ -21,8 +25,10 @@ class Mergedown
       if line =~ /^:include\s+"([^\"]*)"/
         process(folder, $1)
       else
-        File.open(@outfile, "a") { |f| f.write line }
+        @filehandler.write line
       end
     end
+
+    @filehandler.write "\n"
   end
 end

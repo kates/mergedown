@@ -9,5 +9,3 @@ In `path/to/body.md`:
 
     This is some body of text.
     :include "path/to/more/doc/to/include.md"
-
-
